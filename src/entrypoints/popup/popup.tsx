@@ -1,11 +1,13 @@
-import { Button } from "@/components/ui/button";
+import PopupForm from "@/components/shared/popup-form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Popup = () => {
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <Button variant="default">Primary</Button>
-    </div>
+    <section className="flex flex-col">
+      <ScrollArea className="h-96">
+        <PopupForm />
+      </ScrollArea>
+    </section>
   );
 };
 

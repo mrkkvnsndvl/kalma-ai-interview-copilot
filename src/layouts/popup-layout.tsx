@@ -4,13 +4,13 @@ import Popup from "@/entrypoints/popup/popup";
 
 const PopupLayout = () => {
   return (
-    <>
+    <div className="w-sm">
       <PopupHeader />
       <main>
         <Popup />
       </main>
       <PopupFooter />
-    </>
+    </div>
   );
 };
 

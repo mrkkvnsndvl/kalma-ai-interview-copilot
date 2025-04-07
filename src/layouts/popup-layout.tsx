@@ -4,7 +4,7 @@ import Popup from "@/entrypoints/popup/popup";
 
 const PopupLayout = () => {
   return (
-    <div className="w-sm">
+    <div className="w-sm font-geist">
       <PopupHeader />
       <main>
         <Popup />

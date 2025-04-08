@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const Popup = () => {
   return (
     <section className="flex flex-col">
-      <ScrollArea className="h-96">
+      <ScrollArea className="overflow-hidden h-96">
         <PopupForm />
       </ScrollArea>
     </section>

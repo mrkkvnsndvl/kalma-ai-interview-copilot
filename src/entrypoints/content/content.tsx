@@ -6,14 +6,14 @@ const Content = () => {
   return (
     <section className="grid grid-cols-3 gap-2">
       <div className="grid auto-rows-auto">
-        <ScrollArea className="p-4 h-[346px]">
+        <ScrollArea className="p-4 h-[346px] overflow-hidden">
           <div className="flex flex-col gap-2">
             <p className="p-2 text-sm text-secondary bg-primary/40">
               Transcribing...
             </p>
             <p className="p-2 text-sm text-secondary bg-primary/40">
               What is your strength and weaknesses?&nbsp;
-              <span className="px-1 bg-primary">Q1</span>
+              <span className="px-1 text-xs bg-primary">Q1</span>
             </p>
             <p className="p-2 text-sm text-secondary/40 bg-primary/40">
               Okay, okay... You answered the question very professionally and
@@ -31,10 +31,10 @@ const Content = () => {
           </p>
         </div>
       </div>
-      <ScrollArea className="col-span-2 p-4 h-[400px] w-fit">
+      <ScrollArea className="col-span-2 p-4 h-[400px] overflow-hidden">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row gap-x-2">
-            <span className="px-1 text-sm text-secondary bg-primary">Q1</span>
+          <div className="flex flex-row items-center gap-x-2">
+            <span className="px-1 text-xs text-secondary bg-primary">Q1</span>
             <p className="text-sm text-secondary">
               What is your strength and weaknesses?
             </p>

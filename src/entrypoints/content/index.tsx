@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client";
 import ContentLayout from "@/layouts/content-layout";
 
 export default defineContentScript({
+  // matches: ["*://meet.google.com/*", "*://*.zoom.us/*", "*://teams.live.com/*"],
   matches: ["<all_urls>"],
   cssInjectionMode: "ui",
 
@@ -14,13 +15,13 @@ export default defineContentScript({
       position: "overlay",
       anchor: "html",
       append: "first",
-      zIndex: 99999999,
+      zIndex: 99999,
 
       onMount: (container) => {
         const content = document.createElement("div");
         container.append(content);
         const root = ReactDOM.createRoot(content);
-        root.render(<ContentLayout />);
+        root.render(<ContentLayout onClose={() => ui.remove()} />);
         return root;
       },
 

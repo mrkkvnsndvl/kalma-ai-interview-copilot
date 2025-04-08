@@ -5,13 +5,18 @@ import {
   MinimizeIcon,
   XIcon,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { useDrag } from "@/hooks/use-drag";
-import { useMinimizeStore } from "@/stores/minimize-store";
+import { useMinimize } from "@/hooks/use-minimize";
 
-const ContentHeader = () => {
+interface ContentHeaderProps {
+  onClose?: () => void;
+}
+
+const ContentHeader = ({ onClose }: ContentHeaderProps) => {
   const { startDragging } = useDrag();
-  const { isMinimized, setIsMinimized } = useMinimizeStore();
+  const { isMinimized, setIsMinimized } = useMinimize();
 
   return (
     <header
@@ -52,6 +57,7 @@ const ContentHeader = () => {
         <Button
           className="cursor-pointer hover:bg-transparent active:bg-primary"
           variant="ghost"
+          onClick={onClose}
         >
           <XIcon className="w-4 h-4 text-secondary" />
         </Button>

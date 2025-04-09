@@ -48,7 +48,7 @@ const ContentLayout = ({ onClose }: ContentLayoutProps) => {
       <div
         ref={containerRef}
         className={cn(
-          "w-svh font-geist backdrop-sepia-0 bg-primary/30 fixed transition-all duration-300",
+          "w-[464px] font-geist backdrop-sepia-0 bg-primary/50 fixed transition-all duration-300",
           isMinimized && "w-auto h-auto"
         )}
         style={{

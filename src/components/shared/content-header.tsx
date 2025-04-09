@@ -21,21 +21,21 @@ const ContentHeader = ({ onClose }: ContentHeaderProps) => {
   return (
     <header
       className={`flex flex-row items-center justify-between ${
-        isMinimized ? "p-0" : "p-4"
+        isMinimized ? "p-0" : "p-1"
       }`}
     >
       {!isMinimized && (
-        <div className="flex items-center gap-x-2">
-          <BotIcon className="w-7 h-7 text-secondary" />
+        <div className="flex items-center gap-x-1">
+          <BotIcon className="w-5 h-5 text-secondary" />
           <div className="flex flex-col">
-            <span className="text-base font-bold text-secondary">Kalma</span>
-            <span className="text-xs leading-2 text-secondary">
+            <span className="text-sm font-bold text-secondary">Kalma</span>
+            <span className="text-[10px] leading-2 text-secondary">
               AI Interview Copilot
             </span>
           </div>
         </div>
       )}
-      <div className={`flex flex-row ${isMinimized ? "gap-0" : "gap-2"}`}>
+      <div className={`flex flex-row ${isMinimized ? "gap-0" : "gap-1"}`}>
         <Button
           className="hover:bg-transparent active:bg-primary cursor-grab active:cursor-grabbing"
           variant="ghost"

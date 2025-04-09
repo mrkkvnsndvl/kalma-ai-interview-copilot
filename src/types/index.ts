@@ -5,4 +5,10 @@ interface InterviewFormValues {
   resume: File | undefined;
   openRouterAPIKey: string;
   apiModel: string;
+  deepgramAPIKey: string;
+}
+
+interface openRouterAPIModelsI {
+  modelName: string;
+  id: string;
 }

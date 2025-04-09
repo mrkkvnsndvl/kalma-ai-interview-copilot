@@ -1,9 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "@tanstack/react-form";
 import {
   Select,
   SelectContent,
@@ -13,6 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { openRouterAPIModels } from "@/constants";
+import { useForm } from "@tanstack/react-form";
 
 const PopupForm = () => {
   const form = useForm({
@@ -23,6 +24,7 @@ const PopupForm = () => {
       resume: undefined,
       openRouterAPIKey: "",
       apiModel: "",
+      deepgramAPIKey: "",
     } as InterviewFormValues,
     onSubmit: ({ value }) => {
       alert(JSON.stringify(value, null, 2));
@@ -120,7 +122,7 @@ const PopupForm = () => {
         </div>
         <Separator />
         <div className="flex flex-col p-4 gap-y-4">
-          <h3 className="text-base font-medium">API Settings</h3>
+          <h3 className="text-base font-medium">API Configuration</h3>
           <form.Field
             name="openRouterAPIKey"
             validators={{
@@ -131,7 +133,9 @@ const PopupForm = () => {
           >
             {(field) => (
               <div className="flex flex-col gap-y-2">
-                <Label htmlFor="openRouterAPIKey">API Key (Required)</Label>
+                <Label htmlFor="openRouterAPIKey">
+                  OpenRouter API Key (Required)
+                </Label>
                 <Input
                   className="placeholder:text-sm"
                   type="password"
@@ -147,7 +151,7 @@ const PopupForm = () => {
                   </em>
                 ) : null}
                 <div>
-                  <h4 className="text-sm">How to get an API key?</h4>
+                  <h4 className="text-sm">How to get an OpenRouter API key?</h4>
                   <ul>
                     <ol className="text-xs">
                       1. Sign up for an account at the&nbsp;
@@ -184,8 +188,10 @@ const PopupForm = () => {
             }}
           >
             {(field) => (
-              <>
-                <Label htmlFor="apiModel">API Model (Required)</Label>
+              <div className="flex flex-col gap-y-2">
+                <Label htmlFor="apiModel">
+                  OpenRouter API Model (Required)
+                </Label>
                 <Select
                   value={field.state.value}
                   onValueChange={field.handleChange}
@@ -196,20 +202,74 @@ const PopupForm = () => {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Models</SelectLabel>
-                      <SelectItem value="openai/gpt-4">OpenAI GPT-4</SelectItem>
-                      <SelectItem value="openai/gpt-3.5-turbo">
-                        GPT-3.5 Turbo
-                      </SelectItem>
-                      <SelectItem value="anthropic/claude-3-opus">
-                        Claude 3 Opus
-                      </SelectItem>
-                      <SelectItem value="mistral/mistral-large">
-                        Mistral Large
-                      </SelectItem>
+                      {openRouterAPIModels.map((model) => (
+                        <SelectItem key={model.id} value={model.id}>
+                          {model.modelName}
+                        </SelectItem>
+                      ))}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-              </>
+                {field.state.meta.errors ? (
+                  <em className="text-red-500" role="alert">
+                    {field.state.meta.errors.join(", ")}
+                  </em>
+                ) : null}
+              </div>
+            )}
+          </form.Field>
+          <form.Field
+            name="deepgramAPIKey"
+            validators={{
+              onChange: ({ value }) => {
+                return value.trim() === "" ? "API key is required" : undefined;
+              },
+            }}
+          >
+            {(field) => (
+              <div className="flex flex-col gap-y-2">
+                <Label htmlFor="deepgramAPIKey">
+                  Deepgram API Key (Required)
+                </Label>
+                <Input
+                  className="placeholder:text-sm"
+                  type="password"
+                  id="deepgramAPIKey"
+                  name="deepgramAPIKey"
+                  placeholder="Enter API key"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                {field.state.meta.errors ? (
+                  <em className="text-red-500" role="alert">
+                    {field.state.meta.errors.join(", ")}
+                  </em>
+                ) : null}
+                <div>
+                  <h4 className="text-sm">How to get a Deepgram API key?</h4>
+                  <ul>
+                    <ol className="text-xs">
+                      1. Sign up for an account at the&nbsp;
+                      <a
+                        className="font-medium underline"
+                        href="https://deepgram.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Deepgram
+                      </a>
+                      &nbsp;website
+                    </ol>
+                    <ol className="text-xs">
+                      2. Navigate to the API keys section in your account
+                      dashboard and create an API key
+                    </ol>
+                    <ol className="text-xs">
+                      3. Copy and paste the key into the field above
+                    </ol>
+                  </ul>
+                </div>
+              </div>
             )}
           </form.Field>
         </div>

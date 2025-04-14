@@ -4,8 +4,26 @@ export const startDeepgramTranscription = async (
   onError: (error: Error) => void
 ) => {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: {
+        autoGainControl: false,
+        echoCancellation: false,
+        noiseSuppression: false,
+      },
+    });
+
+    const audioTracks = stream.getAudioTracks();
+    if (audioTracks.length === 0) {
+      throw new Error("No audio track found in the screen share");
+    }
+
+    const audioStream = new MediaStream(audioTracks);
+
+    const mediaRecorder = new MediaRecorder(audioStream, {
+      mimeType: "audio/webm",
+    });
+
     const socket = new WebSocket(
       "wss://api.deepgram.com/v1/listen?model=nova-3&language=en&smart_format=true",
       ["token", apiKey]

@@ -1,4 +1,4 @@
-export const startDeepgramTranscription = async (
+export const deepgram = async (
   apiKey: string,
   onTranscript: (text: string) => void,
   onError: (error: Error) => void

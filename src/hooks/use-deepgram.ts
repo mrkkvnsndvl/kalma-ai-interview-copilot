@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { startDeepgramTranscription } from "@/services/deepgram";
+import { deepgram } from "@/services/deepgram";
 import useTranscriptStore from "@/stores/deepgram-store";
 
 const DEEPGRAM_KEY = import.meta.env.WXT_API_KEY;
@@ -18,7 +18,7 @@ const useDeepgram = () => {
 
     const startTranscription = async () => {
       try {
-        cleanup = await startDeepgramTranscription(
+        cleanup = await deepgram(
           DEEPGRAM_KEY,
           handleTranscript,
           (error) => {

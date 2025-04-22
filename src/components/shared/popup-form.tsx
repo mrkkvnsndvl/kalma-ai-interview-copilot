@@ -280,7 +280,7 @@ const PopupForm = () => {
             className="w-full cursor-pointer"
             variant="default"
           >
-            Open AI Interview Copilot
+            Launch Interview Copilot
           </Button>
         </div>
       </form>

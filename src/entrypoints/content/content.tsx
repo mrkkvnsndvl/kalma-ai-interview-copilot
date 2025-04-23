@@ -3,10 +3,17 @@ import { AudioLinesIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useDeepgram from "@/hooks/use-deepgram";
 import useTranscriptStore from "@/stores/deepgram-store";
+import { Button } from "@/components/ui/button";
 
 const Content = () => {
   useDeepgram();
-  const { transcriptEntries, isCapturing } = useTranscriptStore();
+  const {
+    transcriptEntries,
+    isCapturing,
+    textBuffer,
+    createTranscriptFromBuffer,
+    skipBuffer,
+  } = useTranscriptStore();
 
   return (
     <section className="grid grid-cols-3">
@@ -22,7 +29,7 @@ const Content = () => {
                     : "text-secondary/70 bg-primary/30"
                 }`}
               >
-                {entry.text}
+                {entry.text}&nbsp;
                 {entry.isQuestion ? (
                   <span className="px-1 text-[10px] bg-primary">
                     Q{entry.qNumber}
@@ -32,7 +39,12 @@ const Content = () => {
                 )}
               </p>
             ))}
-            {transcriptEntries.length === 0 && (
+            {textBuffer && (
+              <p className="p-1 text-xs text-secondary/70 bg-primary/30">
+                {textBuffer} <span className="px-1">(Recording...)</span>
+              </p>
+            )}
+            {transcriptEntries.length === 0 && !textBuffer && (
               <p className="p-1 text-xs text-secondary bg-primary/30">
                 Transcribing...
               </p>
@@ -42,29 +54,50 @@ const Content = () => {
         <div className="p-1 place-content-end">
           <p className="flex flex-row items-center p-1 text-[10px] bg-primary text-secondary">
             <AudioLinesIcon className="w-3 h-3 mr-1" />
-            Audio: <span>{isCapturing ? "Current page" : "Not capturing"}</span>
+            Audio:
+            <span>&nbsp;{isCapturing ? "Current page" : "Not capturing"}</span>
           </p>
         </div>
       </div>
-      <ScrollArea className="col-span-2 p-1 h-[346px] overflow-hidden">
-        <div className="flex flex-col gap-4">
-          {transcriptEntries
-            .filter((entry) => entry.isQuestion)
-            .map((entry) => (
-              <div key={entry.qNumber} className="flex flex-col gap-2">
-                <div className="flex items-center gap-x-1">
-                  <span className="px-1 text-[10px] text-secondary bg-primary">
-                    Q{entry.qNumber}
-                  </span>
-                  <p className="text-xs text-secondary">{entry.text}</p>
+      <div className="grid auto-rows-auto col-span-2">
+        <ScrollArea className="p-1 h-[346px] overflow-hidden">
+          <div className="flex flex-col gap-4">
+            {transcriptEntries
+              .filter((entry) => entry.isQuestion)
+              .map((entry) => (
+                <div key={entry.qNumber} className="flex flex-col gap-2">
+                  <div className="flex items-start gap-x-1">
+                    <span className="px-1 text-[10px] text-secondary bg-primary">
+                      Q{entry.qNumber}
+                    </span>
+                    <p className="text-xs text-secondary">{entry.text}</p>
+                  </div>
+                  <p className="text-sm text-balance text-secondary">
+                    Sample answer for question {entry.qNumber}...
+                  </p>
                 </div>
-                <p className="text-sm text-balance text-secondary">
-                  Sample answer for question {entry.qNumber}...
-                </p>
-              </div>
-            ))}
+              ))}
+          </div>
+        </ScrollArea>
+        <div className="p-1 place-content-end flex gap-2">
+          <Button
+            onClick={skipBuffer}
+            disabled={!textBuffer}
+            className="flex-1 text-[10px] cursor-pointer p-1 h-fit"
+            variant="default"
+          >
+            Skip
+          </Button>
+          <Button
+            onClick={createTranscriptFromBuffer}
+            disabled={!textBuffer}
+            className="flex-1 text-[10px] cursor-pointer p-1 h-fit"
+            variant="ghost"
+          >
+            Get Answer
+          </Button>
         </div>
-      </ScrollArea>
+      </div>
     </section>
   );
 };

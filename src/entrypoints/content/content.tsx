@@ -1,8 +1,11 @@
-import { AudioLinesIcon } from "lucide-react";
+import { AudioLinesIcon, Loader2 } from "lucide-react";
+import { useEffect } from "react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useDeepgram from "@/hooks/use-deepgram";
+import useOpenRouter from "@/hooks/use-openrouter";
 import useTranscriptStore from "@/stores/deepgram-store";
+import useOpenRouterStore from "@/stores/openrouter-store";
 import { Button } from "@/components/ui/button";
 
 const Content = () => {
@@ -14,6 +17,34 @@ const Content = () => {
     createTranscriptFromBuffer,
     skipBuffer,
   } = useTranscriptStore();
+
+  const { getAnswer } = useOpenRouter();
+  const { answers, isLoading, error } = useOpenRouterStore();
+
+  useEffect(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (!textBuffer) return;
+
+      if (e.key === "ArrowLeft") {
+        skipBuffer();
+      } else if (e.key === "ArrowRight") {
+        handleGetAnswer();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+    return () => document.removeEventListener("keydown", handleKeydown);
+  }, [textBuffer, skipBuffer]);
+
+  const handleGetAnswer = async () => {
+    if (!textBuffer) return;
+    const nextQuestionNumber =
+      transcriptEntries.filter((entry) => entry.isQuestion).length + 1;
+    // Create transcript entry first
+    createTranscriptFromBuffer();
+    // Then get the answer
+    await getAnswer(textBuffer, nextQuestionNumber);
+  };
 
   return (
     <section className="grid grid-cols-3">
@@ -72,11 +103,23 @@ const Content = () => {
                     </span>
                     <p className="text-xs text-secondary">{entry.text}</p>
                   </div>
-                  <p className="text-sm text-balance text-secondary">
-                    Sample answer for question {entry.qNumber}...
-                  </p>
+                  {isLoading &&
+                  entry.qNumber ===
+                    transcriptEntries.filter((e) => e.isQuestion).length ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <p className="text-xs text-secondary">
+                        Generating answer...
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-balance text-secondary">
+                      {answers[entry.qNumber as number]}
+                    </p>
+                  )}
                 </div>
               ))}
+            {error && <p className="text-xs text-red-500">{error}</p>}
           </div>
         </ScrollArea>
         <div className="p-1 place-content-end flex gap-2">
@@ -89,7 +132,7 @@ const Content = () => {
             Skip
           </Button>
           <Button
-            onClick={createTranscriptFromBuffer}
+            onClick={handleGetAnswer}
             disabled={!textBuffer}
             className="flex-1 text-[10px] cursor-pointer p-1 h-fit"
             variant="ghost"

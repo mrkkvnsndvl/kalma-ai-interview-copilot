@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { deepgram } from "@/services/deepgram";
 import useTranscriptStore from "@/stores/deepgram-store";
 
-const DEEPGRAM_KEY = import.meta.env.WXT_API_KEY;
+const DEEPGRAM_KEY = import.meta.env.WXT_DEEPGRAM_API_KEY;
 
 const useDeepgram = () => {
   const { appendToBuffer, setIsCapturing } = useTranscriptStore();

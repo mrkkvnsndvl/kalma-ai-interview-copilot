@@ -2,9 +2,10 @@ import { GithubIcon } from "lucide-react";
 
 const PopupFooter = () => {
   const getYear = new Date().getFullYear();
+
   return (
     <footer className="flex flex-row items-center justify-between p-4 border-t">
-      <p>© {getYear} Kalma AI Interview Copilot by mrkkvnsndvl.</p>
+      <p>© {getYear} Kalma Copilot by mrkkvnsndvl.</p>
       <a
         href="https://github.com/mrkkvnsndvl"
         target="_blank"

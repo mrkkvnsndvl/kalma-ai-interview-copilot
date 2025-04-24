@@ -1,4 +1,4 @@
-interface InterviewFormValues {
+interface InterviewFormI {
   jobTitle: string;
   jobDescription: string | undefined;
   companyName: string | undefined;
@@ -6,9 +6,4 @@ interface InterviewFormValues {
   openRouterAPIKey: string;
   apiModel: string;
   deepgramAPIKey: string;
-}
-
-interface openRouterAPIModelsI {
-  modelName: string;
-  id: string;
 }

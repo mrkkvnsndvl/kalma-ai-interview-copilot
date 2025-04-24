@@ -1,4 +1,4 @@
-import { BotIcon } from 'lucide-react';
+import { BotIcon } from "lucide-react";
 
 const PopupHeader = () => {
   return (
@@ -6,9 +6,7 @@ const PopupHeader = () => {
       <BotIcon className="w-7 h-7" />
       <div className="flex flex-col">
         <span className="text-base font-bold">Kalma</span>
-        <span className="text-xs text-muted-foreground leading-2">
-          AI Interview Copilot
-        </span>
+        <span className="text-xs text-muted-foreground leading-2">Copilot</span>
       </div>
     </header>
   );

@@ -25,7 +25,7 @@ const PopupForm = () => {
       openRouterAPIKey: "",
       apiModel: "",
       deepgramAPIKey: "",
-    } as InterviewFormValues,
+    } as InterviewFormI,
     onSubmit: ({ value }) => {
       alert(JSON.stringify(value, null, 2));
     },
@@ -40,7 +40,7 @@ const PopupForm = () => {
         }}
       >
         <div className="flex flex-col p-4 gap-y-4">
-          <h3 className="text-base font-medium">Setup Interview Context</h3>
+          <h3 className="text-base font-medium">Interview Configuration</h3>
           <form.Field
             name="jobTitle"
             validators={{
@@ -280,7 +280,7 @@ const PopupForm = () => {
             className="w-full cursor-pointer"
             variant="default"
           >
-            Open AI Interview Copilot
+            Lunch Interview Copilot
           </Button>
         </div>
       </form>

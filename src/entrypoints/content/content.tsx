@@ -27,7 +27,7 @@ const Content = () => {
         <div className="p-1 place-content-end">
           <p className="flex flex-row items-center p-1 text-[10px] bg-primary text-secondary">
             <AudioLinesIcon className="w-3 h-3 mr-1" />
-            Audio:&nbsp;<span>Current page</span>
+            Audio:&nbsp;<span>Current Tab</span>
           </p>
         </div>
       </div>
@@ -42,12 +42,9 @@ const Content = () => {
             </p>
           </div>
           <p className="text-sm text-balance text-secondary">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cum ab
-            commodi quos, enim corrupti obcaecati hic soluta, expedita
-            distinctio deserunt odio sed quisquam! Inventore hic dolores ex
-            iusto assumenda, harum provident animi quaerat delectus reiciendis,
-            nisi laudantium neque cum dolore ducimus, tempore tenetur aperiam
-            quae. Laudantium nostrum quidem illo consequatur.
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
+            perferendis saepe! Dolorem nulla expedita tempore ullam tempora
+            provident deleniti nobis.
           </p>
         </div>
       </ScrollArea>

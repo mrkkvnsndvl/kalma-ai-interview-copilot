@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDragStore } from "@/stores/drag-store";
 
-const BOUNDARY_PADDING = 0; // padding from viewport edges
+const BOUNDARY_PADDING = 0;
 
 export const useDrag = () => {
   const {
@@ -22,7 +22,6 @@ export const useDrag = () => {
     let newX = position.x;
     let newY = position.y;
 
-    // Check horizontal bounds
     if (newX + rect.width > viewportWidth - BOUNDARY_PADDING) {
       newX = viewportWidth - rect.width - BOUNDARY_PADDING;
     }
@@ -30,7 +29,6 @@ export const useDrag = () => {
       newX = BOUNDARY_PADDING;
     }
 
-    // Check vertical bounds
     if (newY + rect.height > viewportHeight - BOUNDARY_PADDING) {
       newY = viewportHeight - rect.height - BOUNDARY_PADDING;
     }
@@ -52,24 +50,21 @@ export const useDrag = () => {
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
 
-      // Calculate new position with movement
       let newX = position.x + e.movementX;
       let newY = position.y + e.movementY;
 
-      // Apply boundary constraints
-      // Left boundary
       if (newX < BOUNDARY_PADDING) {
         newX = BOUNDARY_PADDING;
       }
-      // Right boundary
+
       if (newX + rect.width > viewportWidth - BOUNDARY_PADDING) {
         newX = viewportWidth - rect.width - BOUNDARY_PADDING;
       }
-      // Top boundary
+
       if (newY < BOUNDARY_PADDING) {
         newY = BOUNDARY_PADDING;
       }
-      // Bottom boundary
+
       if (newY + rect.height > viewportHeight - BOUNDARY_PADDING) {
         newY = viewportHeight - rect.height - BOUNDARY_PADDING;
       }

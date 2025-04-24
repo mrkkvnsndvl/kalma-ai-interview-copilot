@@ -1,18 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
-import ContentHeader from "@/components/shared/content-header";
-import { ThemeProvider } from "@/components/shared/theme-provider";
-import { Separator } from "@/components/ui/separator";
-import Content from "@/entrypoints/content/content";
-import { useDrag } from "@/hooks/use-drag";
-import { useMinimize } from "@/hooks/use-minimize";
-import { cn } from "@/lib/utils";
+import ContentHeader from '@/components/shared/content-header';
+import { ThemeProvider } from '@/components/shared/theme-provider';
+import { Separator } from '@/components/ui/separator';
+import Content from '@/entrypoints/content/content';
+import { useDrag } from '@/hooks/use-drag';
+import { useMinimize } from '@/hooks/use-minimize';
+import { cn } from '@/lib/utils';
 
-interface ContentLayoutProps {
-  onClose?: () => void;
-}
-
-const ContentLayout = ({ onClose }: ContentLayoutProps) => {
+const ContentLayout = ({ onClose }: ContentHeaderI) => {
   const { setElementRef, ensurePositionInBounds } = useDrag();
   const { isMinimized } = useMinimize();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -23,15 +19,12 @@ const ContentLayout = ({ onClose }: ContentLayoutProps) => {
     }
   }, [setElementRef]);
 
-  // Ensure content stays in viewport bounds when maximizing
   useEffect(() => {
     if (!isMinimized) {
-      // Small delay to allow the UI to expand first
       setTimeout(ensurePositionInBounds, 50);
     }
   }, [isMinimized, ensurePositionInBounds]);
 
-  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       if (!isMinimized) {

@@ -10,11 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useDrag } from "@/hooks/use-drag";
 import { useMinimize } from "@/hooks/use-minimize";
 
-interface ContentHeaderProps {
-  onClose?: () => void;
-}
-
-const ContentHeader = ({ onClose }: ContentHeaderProps) => {
+const ContentHeader = ({ onClose }: ContentHeaderI) => {
   const { startDragging } = useDrag();
   const { isMinimized, setIsMinimized } = useMinimize();
 
@@ -29,8 +25,8 @@ const ContentHeader = ({ onClose }: ContentHeaderProps) => {
           <BotIcon className="w-5 h-5 text-secondary" />
           <div className="flex flex-col">
             <span className="text-sm font-bold text-secondary">Kalma</span>
-            <span className="text-[10px] leading-2 text-secondary">
-              AI Interview Copilot
+            <span className="text-[10px] leading-2 text-muted-foreground">
+              Copilot
             </span>
           </div>
         </div>

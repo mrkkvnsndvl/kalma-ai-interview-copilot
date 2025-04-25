@@ -1,3 +1,8 @@
+import { storage } from "#imports";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { browser } from "wxt/browser";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,19 +20,80 @@ import { Textarea } from "@/components/ui/textarea";
 import { openRouterAPIModels } from "@/constants";
 import { useForm } from "@tanstack/react-form";
 
+const isUrlAllowed = (urlString: string) => {
+  try {
+    const url = new URL(urlString);
+    const hostname = url.hostname;
+    return (
+      hostname === "workspace.google.com" ||
+      hostname.endsWith(".zoom.us") ||
+      hostname === "teams.live.com"
+    );
+  } catch (e) {
+    return false;
+  }
+};
+
 const PopupForm = () => {
+  const [initialValues, setInitialValues] = useState<InterviewFormI>({
+    jobTitle: "",
+    jobDescription: "",
+    companyName: "",
+    resume: "",
+    openRouterAPIKey: "",
+    apiModel: "",
+    deepgramAPIKey: "",
+  });
+
+  useEffect(() => {
+    const loadSavedData = async () => {
+      try {
+        const savedData = await storage.getItem(
+          "session:interview-configuration"
+        );
+        if (savedData) {
+          setInitialValues(savedData as InterviewFormI);
+        }
+      } catch (error) {
+        toast.error("Failed to load saved data. Please try again later.");
+      }
+    };
+
+    loadSavedData();
+  }, []);
+
   const form = useForm({
-    defaultValues: {
-      jobTitle: "",
-      jobDescription: undefined,
-      companyName: undefined,
-      resume: undefined,
-      openRouterAPIKey: "",
-      apiModel: "",
-      deepgramAPIKey: "",
-    } as InterviewFormI,
-    onSubmit: ({ value }) => {
-      alert(JSON.stringify(value, null, 2));
+    defaultValues: initialValues,
+    onSubmit: async ({ value }) => {
+      try {
+        const tabs = await browser.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+        const currentTab = tabs[0];
+
+        if (!currentTab?.url) {
+          toast.error("Unable to determine current tab.");
+          return;
+        }
+
+        if (!isUrlAllowed(currentTab.url)) {
+          toast.error("Navigate to a supported platform to launch.");
+          return;
+        }
+
+        await storage.setItem("session:interview-configuration", value);
+
+        if (currentTab.id) {
+          await browser.tabs.sendMessage(currentTab.id, {
+            action: "MOUNT_COPILOT_UI",
+          });
+        }
+
+        toast.success("Configuration saved! Launching Copilot...");
+      } catch (error) {
+        toast.error("Failed to save configuration.");
+      }
     },
   });
 
@@ -108,13 +174,13 @@ const PopupForm = () => {
             {(field) => (
               <div className="flex flex-col gap-y-2">
                 <Label htmlFor="resume">Resumé (Optional)</Label>
-                <Input
-                  className="cursor-pointer placeholder:text-sm"
-                  type="file"
+                <Textarea
+                  className="placeholder:text-sm"
                   id="resume"
                   name="resume"
-                  accept="application/pdf"
-                  onChange={(e) => field.handleChange(e.target.files?.[0])}
+                  placeholder="Enter resumé content"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
                 />
               </div>
             )}
@@ -280,7 +346,7 @@ const PopupForm = () => {
             className="w-full cursor-pointer"
             variant="default"
           >
-            Lunch Interview Copilot
+            Launch Kalma Copilot
           </Button>
         </div>
       </form>

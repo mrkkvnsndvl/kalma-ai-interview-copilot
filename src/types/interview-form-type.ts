@@ -1,8 +1,8 @@
 interface InterviewFormI {
   jobTitle: string;
-  jobDescription: string | undefined;
-  companyName: string | undefined;
-  resume: File | undefined;
+  jobDescription?: string;
+  companyName?: string;
+  resume?: string;
   openRouterAPIKey: string;
   apiModel: string;
   deepgramAPIKey: string;

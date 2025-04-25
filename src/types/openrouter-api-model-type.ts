@@ -1,4 +1,4 @@
-interface openRouterAPIModelsI {
+interface openRouterAPIModelI {
   modelName: string;
   id: string;
 }

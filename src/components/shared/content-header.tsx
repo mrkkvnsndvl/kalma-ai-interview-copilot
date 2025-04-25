@@ -25,7 +25,7 @@ const ContentHeader = ({ onClose }: ContentHeaderI) => {
           <BotIcon className="w-5 h-5 text-secondary" />
           <div className="flex flex-col">
             <span className="text-sm font-bold text-secondary">Kalma</span>
-            <span className="text-[10px] leading-2 text-muted-foreground">
+            <span className="text-[10px] leading-2 text-secondary/70">
               Copilot
             </span>
           </div>

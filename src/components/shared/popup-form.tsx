@@ -25,7 +25,7 @@ const isUrlAllowed = (urlString: string) => {
     const url = new URL(urlString);
     const hostname = url.hostname;
     return (
-      hostname === "workspace.google.com" ||
+      hostname.endsWith(".google.com") ||
       hostname.endsWith(".zoom.us") ||
       hostname === "teams.live.com"
     );
@@ -82,13 +82,18 @@ const PopupForm = () => {
           return;
         }
 
-        await storage.setItem("session:interview-configuration", value);
+        await storage.setItem("session:interview-configuration", value);  
 
         if (currentTab.id) {
           await browser.tabs.sendMessage(currentTab.id, {
             action: "MOUNT_COPILOT_UI",
           });
         }
+
+        browser.runtime.sendMessage({
+          type: "start-capture",
+          tabId: currentTab.id,
+        });
 
         toast.success("Configuration saved! Launching Copilot...");
       } catch (error) {

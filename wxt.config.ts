@@ -15,6 +15,6 @@ export default defineConfig({
     },
   }),
   manifest: {
-    permissions: ["storage"],
+    permissions: ["storage", "offscreen", "tabCapture", "tabs"],
   },
 });

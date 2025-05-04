@@ -6,11 +6,7 @@ import { browser } from "wxt/browser";
 import ContentLayout from "@/layouts/content-layout";
 
 export default defineContentScript({
-  matches: [
-    "*://workspace.google.com/*",
-    "*://*.zoom.us/*",
-    "*://teams.live.com/*",
-  ],
+  matches: ["*://*.google.com/*", "*://*.zoom.us/*", "*://teams.live.com/*"],
 
   cssInjectionMode: "ui",
 

@@ -82,20 +82,42 @@ const PopupForm = () => {
           return;
         }
 
-        await storage.setItem("session:interview-configuration", value);  
+        await storage.setItem("session:interview-configuration", value);
 
         if (currentTab.id) {
           await browser.tabs.sendMessage(currentTab.id, {
             action: "MOUNT_COPILOT_UI",
           });
+
+          await browser.runtime.sendMessage({
+            type: "start-capture",
+            tabId: currentTab.id,
+          });
+
+          const result = await new Promise((resolve) => {
+            const listener = (msg: any) => {
+              if (msg.type === "offscreen-started" || msg.type === "error") {
+                browser.runtime.onMessage.removeListener(listener);
+                resolve(msg);
+              }
+            };
+            browser.runtime.onMessage.addListener(listener);
+          });
+
+          if ((result as any).type === "offscreen-started") {
+            toast.success("Configuration saved! Launching Copilot...");
+          } else {
+            const rawError = (result as any).error || "";
+            const isActiveCaptureError = rawError.includes(
+              "Cannot capture a tab with an active stream"
+            );
+            const userFriendlyError = isActiveCaptureError
+              ? "This tab is already being captured..."
+              : rawError;
+
+            toast.error(`Capture failed: ${userFriendlyError}`);
+          }
         }
-
-        browser.runtime.sendMessage({
-          type: "start-capture",
-          tabId: currentTab.id,
-        });
-
-        toast.success("Configuration saved! Launching Copilot...");
       } catch (error) {
         toast.error("Failed to save configuration.");
       }

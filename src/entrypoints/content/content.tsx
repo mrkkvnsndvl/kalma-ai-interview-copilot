@@ -1,36 +1,26 @@
-import { AudioLinesIcon } from "lucide-react";
-
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Content = () => {
   return (
     <section className="grid grid-cols-3">
-      <div className="grid auto-rows-auto">
-        <ScrollArea className="p-1 h-[346px] overflow-hidden">
-          <div className="flex flex-col gap-1">
-            <p className="p-1 text-xs text-secondary bg-primary/30">
-              Transcribing...
-            </p>
-            <p className="p-1 text-xs text-secondary bg-primary/30">
-              What is your strength and weaknesses?&nbsp;
-              <span className="px-1 text-[10px] bg-primary">Q1</span>
-            </p>
-            <p className="p-1 text-xs text-secondary/70 bg-primary/30">
-              Okay, okay... You answered the question very professionally and
-              clearly<span className="px-1">(Skip)</span>
-            </p>
-            <p className="p-1 text-xs text-secondary bg-primary/30">
-              Transcribing...
-            </p>
-          </div>
-        </ScrollArea>
-        <div className="p-1 place-content-end">
-          <p className="flex flex-row items-center p-1 text-[10px] bg-primary text-secondary">
-            <AudioLinesIcon className="w-3 h-3 mr-1" />
-            Audio:&nbsp;<span>Current Tab</span>
+      <ScrollArea className="p-1 h-[346px] overflow-hidden">
+        <div className="flex flex-col gap-1">
+          <p className="p-1 text-xs text-secondary bg-primary/30">
+            Transcribing...
+          </p>
+          <p className="p-1 text-xs text-secondary bg-primary/30">
+            What is your strength and weaknesses?&nbsp;
+            <span className="px-1 text-[10px] bg-primary">Q1</span>
+          </p>
+          <p className="p-1 text-xs text-secondary/70 bg-primary/30">
+            Okay, okay... You answered the question very professionally and
+            clearly<span className="px-1">(Skip)</span>
+          </p>
+          <p className="p-1 text-xs text-secondary bg-primary/30">
+            Transcribing...
           </p>
         </div>
-      </div>
+      </ScrollArea>
       <ScrollArea className="col-span-2 p-1 h-[346px] overflow-hidden">
         <div className="flex flex-col gap-4">
           <div className="flex flex-row items-center gap-x-1">

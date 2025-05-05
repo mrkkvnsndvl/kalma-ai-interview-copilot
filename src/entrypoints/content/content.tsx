@@ -1,23 +1,46 @@
+import React, { useEffect, useState } from "react";
+import { browser } from "#imports";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const Content = () => {
+interface TranscriptionUpdateMessage {
+  type: "transcription-update";
+  transcript: string;
+  isFinal: boolean;
+}
+
+const Content: React.FC = () => {
+  const [finalTranscript, setFinalTranscript] = useState<string>("");
+  const [partialTranscript, setPartialTranscript] = useState<string>("");
+
+  useEffect(() => {
+    const listener = (msg: any) => {
+      if (msg.type !== "transcription-update") return;
+      const { transcript, isFinal } = msg as TranscriptionUpdateMessage;
+      if (isFinal) {
+        setFinalTranscript((prev) => prev + transcript + " ");
+        setPartialTranscript("");
+      } else {
+        setPartialTranscript(transcript);
+      }
+    };
+
+    browser.runtime.onMessage.addListener(listener);
+    return () => {
+      browser.runtime.onMessage.removeListener(listener);
+    };
+  }, []);
+
+  const displayTranscript = (finalTranscript + partialTranscript).trim();
+
   return (
     <section className="grid grid-cols-3">
       <ScrollArea className="p-1 h-[346px] overflow-hidden">
         <div className="flex flex-col gap-1">
-          <p className="p-1 text-xs text-secondary bg-primary/30">
-            Transcribing...
-          </p>
-          <p className="p-1 text-xs text-secondary bg-primary/30">
-            What is your strength and weaknesses?&nbsp;
-            <span className="px-1 text-[10px] bg-primary">Q1</span>
-          </p>
-          <p className="p-1 text-xs text-secondary/70 bg-primary/30">
-            Okay, okay... You answered the question very professionally and
-            clearly<span className="px-1">(Skip)</span>
-          </p>
-          <p className="p-1 text-xs text-secondary bg-primary/30">
-            Transcribing...
+          <p
+            id="transcript"
+            className="p-1 text-xs text-secondary bg-primary/30"
+          >
+            {displayTranscript || "Transcribing..."}
           </p>
         </div>
       </ScrollArea>

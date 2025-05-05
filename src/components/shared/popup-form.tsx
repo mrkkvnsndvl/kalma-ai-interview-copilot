@@ -66,19 +66,17 @@ const PopupForm = () => {
     defaultValues: initialValues,
     onSubmit: async ({ value }) => {
       try {
-        const tabs = await browser.tabs.query({
+        const [currentTab] = await browser.tabs.query({
           active: true,
           currentWindow: true,
         });
-        const currentTab = tabs[0];
 
-        if (!currentTab?.url) {
-          toast.error("Unable to determine current tab.");
-          return;
-        }
-
-        if (!isUrlAllowed(currentTab.url)) {
-          toast.error("Navigate to a supported platform to launch.");
+        if (!currentTab?.url || !isUrlAllowed(currentTab.url)) {
+          toast.error(
+            currentTab?.url
+              ? "Navigate to a supported platform to launch."
+              : "Unable to determine current tab."
+          );
           return;
         }
 
@@ -88,7 +86,6 @@ const PopupForm = () => {
           await browser.tabs.sendMessage(currentTab.id, {
             action: "MOUNT_COPILOT_UI",
           });
-
           await browser.runtime.sendMessage({
             type: "start-capture",
             tabId: currentTab.id,
@@ -104,22 +101,13 @@ const PopupForm = () => {
             browser.runtime.onMessage.addListener(listener);
           });
 
-          if ((result as any).type === "offscreen-started") {
-            toast.success("Configuration saved! Launching Copilot...");
-          } else {
-            const rawError = (result as any).error || "";
-            const isActiveCaptureError = rawError.includes(
-              "Cannot capture a tab with an active stream"
-            );
-            const userFriendlyError = isActiveCaptureError
-              ? "This tab is already being captured..."
-              : rawError;
-
-            toast.error(`Capture failed: ${userFriendlyError}`);
-          }
+          (result as any).type === "offscreen-started"
+            ? toast.success("Configuration saved! Launching Copilot...")
+            : toast.error("Capture failed.");
         }
       } catch (error) {
         toast.error("Failed to save configuration.");
+        console.error("Error in onSubmit:", error);
       }
     },
   });

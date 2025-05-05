@@ -1,13 +1,10 @@
 import "@/styles/globals.css";
-
 import ReactDOM from "react-dom/client";
 import { browser } from "wxt/browser";
-
 import ContentLayout from "@/layouts/content-layout";
 
 export default defineContentScript({
   matches: ["*://*.google.com/*", "*://*.zoom.us/*", "*://teams.live.com/*"],
-
   cssInjectionMode: "ui",
 
   async main(ctx) {
@@ -26,7 +23,12 @@ export default defineContentScript({
         const root = ReactDOM.createRoot(content);
         root.render(
           <ContentLayout
-            onClose={() => {
+            onClose={async () => {
+              try {
+                await browser.runtime.sendMessage({ type: "stop-capture" });
+              } catch (err) {
+                console.error("Error stopping capture:", err);
+              }
               ui.remove();
               isMounted = false;
             }}

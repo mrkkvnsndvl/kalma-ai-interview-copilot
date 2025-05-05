@@ -27,3 +27,6 @@ web-ext.config.ts
 
 # Github Copilot files
 .github/*
+
+# Environment variables
+.env

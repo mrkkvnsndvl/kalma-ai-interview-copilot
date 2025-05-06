@@ -4,9 +4,7 @@ export default defineBackground(() => {
   async function setupOffscreen() {
     const offscreenUrl = browser.runtime.getURL("/offscreen.html");
     const contexts = await browser.runtime.getContexts({
-      contextTypes: [
-        "OFFSCREEN_DOCUMENT" as unknown as Browser.runtime.ContextType,
-      ],
+      contextTypes: ["OFFSCREEN_DOCUMENT" as unknown as Browser.runtime.ContextType],
       documentUrls: [offscreenUrl],
     });
     if (contexts.length === 0) {
@@ -21,15 +19,16 @@ export default defineBackground(() => {
   browser.runtime.onMessage.addListener(async (msg) => {
     if (msg.type === "start-capture") {
       await setupOffscreen();
-      browser.tabCapture.getMediaStreamId(
-        { targetTabId: msg.tabId },
-        (streamId: string) => {
-          browser.runtime.sendMessage({
+      browser.tabCapture.getMediaStreamId({ targetTabId: msg.tabId }, (streamId: string) => {
+        browser.runtime
+          .sendMessage({
             type: "offscreen-start-capture",
             streamId,
+          })
+          .catch((error) => {
+            console.warn("Failed to send offscreen-start-capture:", error);
           });
-        }
-      );
+      });
     }
     if (msg.type === "stop-capture") {
       await browser.offscreen.closeDocument();
@@ -40,7 +39,9 @@ export default defineBackground(() => {
         currentWindow: true,
       });
       if (activeTabs[0]?.id) {
-        browser.tabs.sendMessage(activeTabs[0].id, msg);
+        browser.tabs.sendMessage(activeTabs[0].id, msg).catch((error) =>
+          console.warn("Failed forwarding message to content:", error)
+        );
       }
     }
   });

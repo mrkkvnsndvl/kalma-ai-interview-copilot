@@ -1,37 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { browser } from "#imports";
+import React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-interface TranscriptionUpdateMessage {
-  type: "transcription-update";
-  transcript: string;
-  isFinal: boolean;
-}
+import { useDeepgram } from "@/hooks/use-deepgram";
 
 const Content: React.FC = () => {
-  const [finalTranscript, setFinalTranscript] = useState<string>("");
-  const [partialTranscript, setPartialTranscript] = useState<string>("");
-
-  useEffect(() => {
-    const listener = (msg: any) => {
-      if (msg.type !== "transcription-update") return;
-      const { transcript, isFinal } = msg as TranscriptionUpdateMessage;
-      if (isFinal) {
-        setFinalTranscript((prev) => prev + transcript + " ");
-        setPartialTranscript("");
-      } else {
-        setPartialTranscript(transcript);
-      }
-    };
-
-    browser.runtime.onMessage.addListener(listener);
-    return () => {
-      browser.runtime.onMessage.removeListener(listener);
-    };
-  }, []);
-
-  const displayTranscript = (finalTranscript + partialTranscript).trim();
-
+  const { transcript, isRecording } = useDeepgram();
   return (
     <section className="grid grid-cols-3">
       <ScrollArea className="p-1 h-[346px] overflow-hidden">
@@ -40,7 +12,8 @@ const Content: React.FC = () => {
             id="transcript"
             className="p-1 text-xs text-secondary bg-primary/30"
           >
-            {displayTranscript || "Transcribing..."}
+            {transcript ||
+              (isRecording ? "Transcribing..." : "Waiting for capture...")}
           </p>
         </div>
       </ScrollArea>

@@ -1,8 +1,6 @@
-import { browser } from "#imports";
-
 const DEEPGRAM_API_URL =
   "wss://api.deepgram.com/v1/listen?model=nova-3&language=en&smart_format=false&filler_words=true&punctuate=true&interim_results=true";
-const DEEPGRAM_TOKEN = "063621f91bc389b334455c70503469632f0447ac";
+const DEEPGRAM_TOKEN = import.meta.env.WXT_DEEPGRAM_API_KEY;
 
 export async function startDeepgramCapture(
   streamId: string,
@@ -24,7 +22,9 @@ export async function startDeepgramCapture(
       console.error("MediaRecorder type 'audio/webm' is not supported.");
       return;
     }
-    const mediaRecorder = new MediaRecorder(audioStream, { mimeType: "audio/webm" });
+    const mediaRecorder = new MediaRecorder(audioStream, {
+      mimeType: "audio/webm",
+    });
     const dgSocket = new WebSocket(DEEPGRAM_API_URL, ["token", DEEPGRAM_TOKEN]);
     dgSocket.onopen = () => {
       mediaRecorder.addEventListener("dataavailable", (event: BlobEvent) => {

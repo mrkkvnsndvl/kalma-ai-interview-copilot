@@ -1,4 +1,4 @@
-interface DeepgramStateI {
+interface DeepgramStoreI {
   finalTranscript: string;
   partialTranscript: string;
   isRecording: boolean;

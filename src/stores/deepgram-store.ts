@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export const useDeepgramStore = create<DeepgramStateI>((set) => ({
+export const useDeepgramStore = create<DeepgramStoreI>((set) => ({
   finalTranscript: "",
   partialTranscript: "",
   isRecording: false,

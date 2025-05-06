@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
+
 import ReactDOM from "react-dom/client";
 import { browser } from "wxt/browser";
+
 import ContentLayout from "@/layouts/content-layout";
 
 export default defineContentScript({

@@ -1,12 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
-import ContentHeader from '@/components/shared/content-header';
-import { ThemeProvider } from '@/components/shared/theme-provider';
-import { Separator } from '@/components/ui/separator';
-import Content from '@/entrypoints/content/content';
-import { useDrag } from '@/hooks/use-drag';
-import { useMinimize } from '@/hooks/use-minimize';
-import { cn } from '@/lib/utils';
+import ContentHeader from "@/components/shared/content-header";
+import { ThemeProvider } from "@/components/shared/theme-provider";
+import { Separator } from "@/components/ui/separator";
+import Content from "@/entrypoints/content/content";
+import { useDrag } from "@/hooks/use-drag";
+import { useMinimize } from "@/hooks/use-minimize";
+import { cn } from "@/lib/utils";
 
 const ContentLayout = ({ onClose }: ContentHeaderI) => {
   const { setElementRef, ensurePositionInBounds } = useDrag();

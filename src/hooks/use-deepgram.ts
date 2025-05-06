@@ -1,13 +1,20 @@
-import { useEffect } from "react";
 import { browser } from "#imports";
+import { useEffect } from "react";
+
 import { useDeepgramStore } from "@/stores/deepgram-store";
 
 export const useDeepgram = () => {
-  const setFinalTranscript = useDeepgramStore((state) => state.setFinalTranscript);
-  const setPartialTranscript = useDeepgramStore((state) => state.setPartialTranscript);
+  const setFinalTranscript = useDeepgramStore(
+    (state) => state.setFinalTranscript
+  );
+  const setPartialTranscript = useDeepgramStore(
+    (state) => state.setPartialTranscript
+  );
   const setIsRecording = useDeepgramStore((state) => state.setIsRecording);
   const finalTranscript = useDeepgramStore((state) => state.finalTranscript);
-  const partialTranscript = useDeepgramStore((state) => state.partialTranscript);
+  const partialTranscript = useDeepgramStore(
+    (state) => state.partialTranscript
+  );
   const isRecording = useDeepgramStore((state) => state.isRecording);
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { browser } from "#imports";
+
 import { startDeepgramCapture } from "@/services/deepgram";
 
 browser.runtime.onMessage.addListener(async (msg) => {

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export const useDragStore = create<DragStateI>((set) => ({
+export const useDragStore = create<DragStoreI>((set) => ({
   isDragging: false,
   position: { x: 0, y: 0 },
   elementRef: null,

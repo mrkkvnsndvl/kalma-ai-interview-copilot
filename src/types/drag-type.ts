@@ -1,4 +1,4 @@
-interface DragStateI {
+interface DragStoreI {
   isDragging: boolean;
   position: { x: number; y: number };
   elementRef: HTMLDivElement | null;

@@ -5,6 +5,7 @@ import { useTranscript } from "@/hooks/use-transcript";
 const Content = () => {
   const { transcript, isRecording } = useDeepgram();
   const { transcriptEntries, textBuffer } = useTranscript(transcript);
+  const questionEntries = transcriptEntries.filter((entry) => entry.isQuestion);
 
   return (
     <section className="grid grid-cols-3">
@@ -43,19 +44,22 @@ const Content = () => {
       </ScrollArea>
       <ScrollArea className="col-span-2 p-1 h-[346px] overflow-hidden">
         <div className="flex flex-col gap-4">
-          <div className="flex flex-row items-center gap-x-1">
-            <span className="px-1 text-[10px] text-secondary bg-primary">
-              Q1
-            </span>
-            <p className="text-xs text-secondary">
-              What is your strength and weaknesses?
-            </p>
-          </div>
-          <p className="text-sm text-balance text-secondary">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Minima,
-            perferendis saepe! Dolorem nulla expedita tempore ullam tempora
-            provident deleniti nobis.
-          </p>
+          {questionEntries.length === 0 && (
+            <p className="text-xs text-secondary">No questions captured yet.</p>
+          )}
+          {questionEntries.map((entry, index) => (
+            <div key={entry.qNumber || index} className="flex flex-col gap-4">
+              <div className="flex flex-row items-center gap-x-1">
+                <span className="px-1 text-[10px] text-secondary bg-primary">
+                  Q{entry.qNumber}
+                </span>
+                <p className="text-xs text-secondary">{entry.text}</p>
+              </div>
+              <p className="text-sm text-balance text-secondary">
+                AI answer to the question goes here.
+              </p>
+            </div>
+          ))}
         </div>
       </ScrollArea>
     </section>

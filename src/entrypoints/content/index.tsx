@@ -6,14 +6,14 @@ import { browser } from "wxt/browser";
 import ContentLayout from "@/layouts/content-layout";
 
 export default defineContentScript({
-  matches: ["*://*.google.com/*", "*://*.zoom.us/*", "*://teams.live.com/*"],
+  matches: ["*://meet.google.com/*", "*://*.zoom.us/*", "*://teams.live.com/*"],
   cssInjectionMode: "ui",
 
   async main(ctx) {
     let isMounted = false;
 
     const ui = await createShadowRootUi(ctx, {
-      name: "kalma-ai-interview-copilot",
+      name: "kalma-copilot",
       position: "overlay",
       anchor: "html",
       append: "first",
@@ -26,11 +26,7 @@ export default defineContentScript({
         root.render(
           <ContentLayout
             onClose={async () => {
-              try {
-                await browser.runtime.sendMessage({ type: "stop-capture" });
-              } catch (err) {
-                console.error("Error stopping capture:", err);
-              }
+              await browser.runtime.sendMessage({ type: "stop-tab-capture" });
               ui.remove();
               isMounted = false;
             }}
@@ -46,7 +42,7 @@ export default defineContentScript({
     });
 
     browser.runtime.onMessage.addListener((message) => {
-      if (message.action === "MOUNT_COPILOT_UI" && !isMounted) {
+      if (message.action === "inject-content" && !isMounted) {
         ui.mount();
         isMounted = true;
       }

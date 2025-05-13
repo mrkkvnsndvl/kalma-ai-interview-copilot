@@ -1,4 +1,4 @@
-export const openRouterAPIModels: openRouterAPIModelI[] = [
+export const aiModels: aiModelI[] = [
   {
     modelName: "Google: LearnLM 1.5 Pro Experimental",
     id: "google/learnlm-1.5-pro-experimental:free",

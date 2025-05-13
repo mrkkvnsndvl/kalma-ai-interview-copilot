@@ -1,55 +1,54 @@
-import { Browser, browser } from "#imports";
+import { browser } from "#imports";
 
 export default defineBackground(() => {
-  async function setupOffscreen() {
-    const offscreenUrl = browser.runtime.getURL("/offscreen.html");
+  const offscreen = async () => {
     const contexts = await browser.runtime.getContexts({
-      contextTypes: [
-        "OFFSCREEN_DOCUMENT" as unknown as Browser.runtime.ContextType,
-      ],
-      documentUrls: [offscreenUrl],
+      contextTypes: [browser.runtime.ContextType.OFFSCREEN_DOCUMENT],
+      documentUrls: [browser.runtime.getURL("/offscreen.html")],
     });
     if (contexts.length === 0) {
       await browser.offscreen.createDocument({
         url: "/offscreen.html",
-        reasons: ["USER_MEDIA"],
-        justification: "Continue capturing tab audio after popup closes",
+        reasons: [browser.offscreen.Reason.USER_MEDIA],
+        justification: "Persist tab capture.",
       });
     }
-  }
+  };
 
-  browser.runtime.onMessage.addListener(async (msg) => {
-    if (msg.type === "start-capture") {
-      await setupOffscreen();
+  browser.runtime.onMessage.addListener(async (message) => {
+    if (message.type === "start-tab-capture") {
+      await offscreen();
       browser.tabCapture.getMediaStreamId(
-        { targetTabId: msg.tabId },
+        { targetTabId: message.tabId },
         (streamId: string) => {
           browser.runtime
             .sendMessage({
-              type: "offscreen-start-capture",
+              type: "offscreen-start-tab-capture",
               streamId,
             })
             .catch((error) => {
-              console.warn("Failed to send offscreen-start-capture:", error);
+              console.error(error);
             });
         }
       );
     }
-    if (msg.type === "stop-capture") {
-      await browser.offscreen.closeDocument();
-    }
-    if (msg.type === "transcription-update") {
+    if (message.type === "display-transcript") {
       const activeTabs = await browser.tabs.query({
         active: true,
         currentWindow: true,
       });
       if (activeTabs[0]?.id) {
-        browser.tabs
-          .sendMessage(activeTabs[0].id, msg)
-          .catch((error) =>
-            console.warn("Failed forwarding message to content:", error)
-          );
+        try {
+          await browser.tabs.sendMessage(activeTabs[0].id, message);
+        } catch (error) {
+          console.error("Message not delivered: ", error);
+        }
+      } else {
+        console.warn("No active tab found to deliver the message.");
       }
+    }
+    if (message.type === "stop-tab-capture") {
+      await browser.offscreen.closeDocument();
     }
   });
 });

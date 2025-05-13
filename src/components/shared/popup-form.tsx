@@ -1,7 +1,6 @@
-import { storage } from "#imports";
+import { browser, storage } from "#imports";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { browser } from "wxt/browser";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,53 +16,49 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { openRouterAPIModels } from "@/constants";
+import { aiModels } from "@/constants";
 import { useForm } from "@tanstack/react-form";
 
-const isUrlAllowed = (urlString: string) => {
-  try {
-    const url = new URL(urlString);
-    const hostname = url.hostname;
-    return (
-      hostname.endsWith(".google.com") ||
-      hostname.endsWith(".zoom.us") ||
-      hostname === "teams.live.com"
-    );
-  } catch (e) {
-    return false;
-  }
-};
-
 const PopupForm = () => {
-  const [initialValues, setInitialValues] = useState<InterviewFormI>({
+  const [values, setValues] = useState<InterviewConfigurationI>({
     jobTitle: "",
     jobDescription: "",
     companyName: "",
     resume: "",
     openRouterAPIKey: "",
-    apiModel: "",
+    aiModel: "",
     deepgramAPIKey: "",
   });
 
   useEffect(() => {
-    const loadSavedData = async () => {
+    const interviewConfiguration = async () => {
       try {
-        const savedData = await storage.getItem(
-          "session:interview-configuration"
-        );
-        if (savedData) {
-          setInitialValues(savedData as InterviewFormI);
-        }
+        const values = await storage.getItem("session:interview-configuration");
+        setValues(values as InterviewConfigurationI);
       } catch (error) {
-        toast.error("Failed to load saved data. Please try again later.");
+        toast.error("Failed to get interview configuration");
       }
     };
-
-    loadSavedData();
+    interviewConfiguration();
   }, []);
 
+  const matches: string[] = [
+    "*://meet.google.com/*",
+    "*://*.zoom.us/*",
+    "*://teams.live.com/*",
+  ];
+
+  const isSupportedPlatform = (url: string, patterns: string[]): boolean => {
+    return patterns.some((pattern) => {
+      const escaped = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, "\\$&");
+      const regexPattern = "^" + escaped.replace(/\*/g, ".*") + "$";
+      const regex = new RegExp(regexPattern);
+      return regex.test(url);
+    });
+  };
+
   const form = useForm({
-    defaultValues: initialValues,
+    defaultValues: values,
     onSubmit: async ({ value }) => {
       try {
         const [currentTab] = await browser.tabs.query({
@@ -71,43 +66,27 @@ const PopupForm = () => {
           currentWindow: true,
         });
 
-        if (!currentTab?.url || !isUrlAllowed(currentTab.url)) {
+        if (currentTab.url && !isSupportedPlatform(currentTab.url, matches)) {
           toast.error(
-            currentTab?.url
-              ? "Navigate to a supported platform to launch."
-              : "Unable to determine current tab."
+            "Current platform is not supported. Please launch Kalma Copilot on a supported platform such as Google Meet, Zoom, or Microsoft Teams."
           );
           return;
         }
 
-        await storage.setItem("session:interview-configuration", value);
-
         if (currentTab.id) {
           await browser.tabs.sendMessage(currentTab.id, {
-            action: "MOUNT_COPILOT_UI",
+            action: "inject-content",
           });
           await browser.runtime.sendMessage({
-            type: "start-capture",
+            type: "start-tab-capture",
             tabId: currentTab.id,
           });
-
-          const result = await new Promise((resolve) => {
-            const listener = (msg: any) => {
-              if (msg.type === "offscreen-started" || msg.type === "error") {
-                browser.runtime.onMessage.removeListener(listener);
-                resolve(msg);
-              }
-            };
-            browser.runtime.onMessage.addListener(listener);
-          });
-
-          (result as any).type === "offscreen-started"
-            ? toast.success("Configuration saved! Launching Copilot...")
-            : toast.error("Capture failed.");
         }
+
+        await storage.setItem("session:interview-configuration", value);
+        console.log(storage.getItem("session:interview-configuration"));
       } catch (error) {
-        toast.error("Failed to save configuration.");
-        console.error("Error in onSubmit:", error);
+        toast.error("Failed to save interview configuration.");
       }
     },
   });
@@ -259,7 +238,7 @@ const PopupForm = () => {
             )}
           </form.Field>
           <form.Field
-            name="apiModel"
+            name="aiModel"
             validators={{
               onChange: ({ value }) => {
                 return value.trim() === ""
@@ -270,20 +249,18 @@ const PopupForm = () => {
           >
             {(field) => (
               <div className="flex flex-col gap-y-2">
-                <Label htmlFor="apiModel">
-                  OpenRouter API Model (Required)
-                </Label>
+                <Label htmlFor="aiModel">AI Model (Required)</Label>
                 <Select
                   value={field.state.value}
                   onValueChange={field.handleChange}
                 >
                   <SelectTrigger className="w-full cursor-pointer">
-                    <SelectValue placeholder="Select API model" />
+                    <SelectValue placeholder="Select AI model" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Models</SelectLabel>
-                      {openRouterAPIModels.map((model) => (
+                      {aiModels.map((model) => (
                         <SelectItem key={model.id} value={model.id}>
                           {model.modelName}
                         </SelectItem>

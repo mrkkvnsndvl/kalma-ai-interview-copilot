@@ -1,13 +1,25 @@
-import { BotIcon } from "lucide-react";
+import { useTheme } from "@/components/shared/theme-provider";
 
 const PopupHeader = () => {
+  const { theme } = useTheme();
+
+  const iconMode =
+    theme === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark-mode"
+        : "light-mode"
+      : theme === "dark"
+      ? "dark-mode"
+      : "light-mode";
+
   return (
     <header className="flex flex-row items-center p-4 border-b gap-x-2">
-      <BotIcon className="w-7 h-7" />
-      <div className="flex flex-col">
-        <span className="text-base font-bold">Kalma</span>
-        <span className="text-xs text-muted-foreground leading-2">Copilot</span>
-      </div>
+      <img
+        className="w-7 h-7"
+        src={`/kalma-copilot-${iconMode}.svg`}
+        alt="Kalma Copilot icon"
+      />
+      <span className="text-base font-bold">Kalma Copilot</span>
     </header>
   );
 };

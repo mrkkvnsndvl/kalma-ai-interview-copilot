@@ -1,15 +1,36 @@
+import { LoaderIcon } from "lucide-react";
+import { useEffect } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { useDeepgram } from "@/hooks/use-deepgram";
-import { useTranscript } from "@/hooks/use-transcript";
+import { openrouterService } from "@/services/openrouter-service";
 
 const Content = () => {
-  const { transcript, isRecording } = useDeepgram();
-  const { transcriptEntries, textBuffer } = useTranscript(transcript);
+  const {
+    isRecording,
+    transcriptEntries,
+    pendingTranscript,
+    updateTranscriptEntry,
+  } = useDeepgram();
+
   const questionEntries = transcriptEntries.filter((entry) => entry.isQuestion);
 
+  useEffect(() => {
+    questionEntries.forEach((entry) => {
+      if (!entry.aiAnswer && entry.questionCount) {
+        openrouterService(entry.transcriptText).then((answer) => {
+          updateTranscriptEntry(entry.questionCount!, answer);
+        });
+      }
+    });
+  }, [questionEntries, updateTranscriptEntry]);
+
   return (
-    <section className="grid grid-cols-3">
-      <ScrollArea className="p-1 h-[346px] overflow-hidden">
+    <section className="grid grid-cols-[1fr_auto_2fr] h-[464px]">
+      <ScrollArea className="p-1 overflow-hidden h-[464px]">
         <div className="flex flex-col gap-1">
           {transcriptEntries.map((entry, index) => (
             <p
@@ -20,44 +41,72 @@ const Content = () => {
                   : "text-secondary/70 bg-primary/30"
               }`}
             >
-              {entry.text}&nbsp;
+              {entry.transcriptText}&nbsp;
               {entry.isQuestion ? (
-                <span className="px-1 text-[10px] bg-primary">
-                  Q{entry.qNumber}
+                <span className="px-1 text-xs bg-primary">
+                  Q{entry.questionCount}
                 </span>
               ) : (
-                <span className="px-1">(Skipped)</span>
+                <span className="px-1 text-xs">(Skip)</span>
               )}
             </p>
           ))}
-          {textBuffer && (
+          {pendingTranscript ? (
             <p className="p-1 text-xs text-secondary/70 bg-primary/30">
-              {textBuffer} <span className="px-1">(Recording...)</span>
+              {pendingTranscript}
             </p>
-          )}
-          {transcriptEntries.length === 0 && !textBuffer && (
+          ) : (
             <p className="p-1 text-xs text-secondary bg-primary/30">
-              {isRecording ? "Transcribing..." : "Waiting for capture..."}
+              {!isRecording && (
+                <>
+                  Transcribing
+                  <span className="animate-dots">
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
+                  </span>
+                </>
+              )}
             </p>
           )}
         </div>
       </ScrollArea>
-      <ScrollArea className="col-span-2 p-1 h-[346px] overflow-hidden">
+      <Separator className="w-[2px]" orientation="vertical" />
+      <ScrollArea className="p-1 overflow-hidden h-[464px]">
         <div className="flex flex-col gap-4">
-          {questionEntries.length === 0 && (
-            <p className="text-xs text-secondary">No questions captured yet.</p>
-          )}
           {questionEntries.map((entry, index) => (
-            <div key={entry.qNumber || index} className="flex flex-col gap-4">
+            <div
+              key={entry.questionCount || index}
+              className="flex flex-col gap-2"
+            >
               <div className="flex flex-row items-center gap-x-1">
-                <span className="px-1 text-[10px] text-secondary bg-primary">
-                  Q{entry.qNumber}
+                <span className="px-1 text-xs text-secondary bg-primary">
+                  Q{entry.questionCount}
                 </span>
-                <p className="text-xs text-secondary">{entry.text}</p>
+                <p className="text-xs text-secondary">{entry.transcriptText}</p>
               </div>
-              <p className="text-sm text-balance text-secondary">
-                AI answer to the question goes here.
-              </p>
+              <div className="text-base text-balance text-secondary">
+                {entry.aiAnswer ? (
+                  <Markdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      ol: ({ node, ...props }) => (
+                        <ol className="ml-4 list-decimal" {...props} />
+                      ),
+                      ul: ({ node, ...props }) => (
+                        <ul className="ml-4 list-disc" {...props} />
+                      ),
+                      li: ({ node, ...props }) => (
+                        <li className="mb-1" {...props} />
+                      ),
+                    }}
+                  >
+                    {entry.aiAnswer}
+                  </Markdown>
+                ) : (
+                  <LoaderIcon className="w-4 h-4 animate-spin" />
+                )}
+              </div>
             </div>
           ))}
         </div>

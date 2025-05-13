@@ -1,22 +1,24 @@
 import { browser } from "#imports";
 
-import { startDeepgramCapture } from "@/services/deepgram";
+import { deepgramService } from "@/services/deepgram-service";
 
-browser.runtime.onMessage.addListener(async (msg) => {
-  if (msg.type !== "offscreen-start-capture") return;
+browser.runtime.onMessage.addListener(async (message) => {
+  if (message.type !== "offscreen-start-tab-capture") {
+    return;
+  }
   try {
-    await startDeepgramCapture(msg.streamId, (transcript, isFinal) => {
+    await deepgramService(message.streamId, (transcript, isFinal) => {
       browser.runtime
         .sendMessage({
-          type: "transcription-update",
+          type: "display-transcript",
           transcript,
           isFinal,
         })
         .catch((error) => {
-          console.warn("sendMessage from offscreen failed: ", error);
+          console.error(error);
         });
     });
   } catch (error) {
-    console.error("Deepgram capture error:", error);
+    console.error(error);
   }
 });

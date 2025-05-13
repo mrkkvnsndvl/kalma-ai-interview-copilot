@@ -1,3 +1,0 @@
-interface ContentHeaderI {
-  onClose?: () => void;
-}

@@ -41,7 +41,7 @@ const ContentLayout = ({ onClose }: ContentHeaderI) => {
       <div
         ref={containerRef}
         className={cn(
-          "w-[464px] font-geist backdrop-sepia-0 bg-primary/50 fixed transition-all duration-300",
+          "w-[664px] font-geist backdrop-sepia-0 bg-primary/50 fixed transition-all duration-300",
           isMinimized && "w-auto h-auto"
         )}
         style={{
